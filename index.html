@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AquaSmart Fields - NASA Space Apps Challenge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .hero-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(34, 197, 94, 0.1) 0%, transparent 50%);
+        }
+        .nasa-logo {
+            position: relative;
+            z-index: 10;
+        }
+        .satellite-icon {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            width: 24px;
+            height: 24px;
+        }
+        .satellite-icon::before {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            top: 8px;
+            right: 8px;
+        }
+        .satellite-icon::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 12px;
+            background: white;
+            top: 2px;
+            right: 11px;
+        }
+        .satellite-line-1, .satellite-line-2, .satellite-line-3, .satellite-line-4 {
+            position: absolute;
+            width: 1px;
+            height: 8px;
+            background: white;
+            top: 4px;
+        }
+        .satellite-line-1 { right: 15px; transform: rotate(45deg); }
+        .satellite-line-2 { right: 15px; transform: rotate(-45deg); }
+        .satellite-line-3 { right: 15px; transform: rotate(90deg); top: 3px; }
+        .satellite-line-4 { right: 15px; transform: rotate(180deg); }
+        
+        .page-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        .page.active {
+            display: block;
+        }
+        .cta-button {
+            transition: all 0.3s ease;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .cta-button:disabled {
+            background-color: #93c5fd;
+            cursor: not-allowed;
+        }
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.8s ease-out;
+        }
+        
+        /* NASA Logo Styling */
+        .nasa-badge {
+            background: linear-gradient(145deg, #000000, #2d3748);
+            border: 2px solid #60a5fa;
+            position: relative;
+        }
+        .nasa-badge::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            bottom: -1px;
+            background: linear-gradient(145deg, #60a5fa, #93c5fd);
+            border-radius: inherit;
+            z-index: -1;
+        }
+        
+        .progress-bar {
+            background: #f1f5f9;
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #3b82f6, #22c55e);
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <!-- NASA Logo -->
+                <div class="nasa-badge rounded-xl px-4 py-2 nasa-logo">
+                    <div class="satellite-icon"></div>
+                    <div class="satellite-line-1"></div>
+                    <div class="satellite-line-2"></div>
+                    <div class="satellite-line-3"></div>
+                    <div class="satellite-line-4"></div>
+                    <div class="text-white text-sm font-bold">
+                        <span class="text-red-500">NASA</span><span class="text-xs">®</span><br>
+                        <span class="text-xs">SPACE APPS</span><br>
+                        <span class="text-xs">CHALLENGE</span>
+                    </div>
+                </div>
+                <a href="#" class="text-2xl font-bold text-blue-600">
+                    💧 AquaSmart Fields
+                </a>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="hidden md:flex items-center space-x-6">
+                <div class="text-sm text-gray-600 w-32">
+                    <div class="flex justify-between text-xs">
+                        <span>Intro</span>
+                        <span>Details</span>
+                        <span>Plan</span>
+                    </div>
+                    <div class="progress-bar mt-1">
+                        <div id="progress-fill" class="progress-fill" style="width: 33%"></div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </nav>
+
+    <main class="page-container">
+        
+        <!-- PAGE 1: INTRODUCTION -->
+        <section id="page-1" class="page active">
+            <div class="hero-bg text-white py-20">
+                <div class="container mx-auto px-6 text-center relative z-10">
+                    <div class="max-w-4xl mx-auto">
+                        <h1 class="text-4xl md:text-6xl font-bold leading-tight mb-6">
+                            Smarter Irrigation 
+                            <span class="text-green-400">Powered by NASA</span>
+                        </h1>
+                        <p class="mt-6 text-xl text-gray-200 max-w-3xl mx-auto mb-8">
+                            Transform your farming with NASA's real-time space data. Get personalized irrigation schedules 
+                            that reduce water waste and boost crop health using live solar and weather data from NASA's POWER Project.
+                        </p>
+                        
+                        <!-- Features Grid -->
+                        <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 card-hover">
+                                <div class="text-4xl mb-4">📡</div>
+                                <h3 class="text-xl font-bold mb-2">NASA Space Data</h3>
+                                <p class="text-gray-300">Real-time solar insolation and precipitation data from NASA's global satellite network</p>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 card-hover">
+                                <div class="text-4xl mb-4">🌱</div>
+                                <h3 class="text-xl font-bold mb-2">Smart Farming</h3>
+                                <p class="text-gray-300">AI-powered irrigation recommendations tailored to your specific crop and location</p>
+                            </div>
+                            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 card-hover">
+                                <div class="text-4xl mb-4">💧</div>
+                                <h3 class="text-xl font-bold mb-2">Water Conservation</h3>
+                                <p class="text-gray-300">Reduce water usage by up to 30% while improving crop yield with precision irrigation</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-16">
+                            <button type="button" id="start-journey-btn" class="cta-button bg-gradient-to-r from-blue-600 to-green-600 text-white font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl text-lg">
+                                Start Your Smart Irrigation Journey →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 2: DETAILS ENTRY -->
+        <section id="page-2" class="page">
+            <div class="container mx-auto px-6 py-20">
+                <div class="max-w-4xl mx-auto text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Customize Your Irrigation Plan</h2>
+                    <p class="text-lg text-gray-600">
+                        Provide your farming details to receive a personalized irrigation schedule based on NASA's latest data.
+                    </p>
+                </div>
+                
+                <div class="bg-white rounded-2xl shadow-xl p-8 max-w-4xl mx-auto">
+                    <form id="schedule-form" class="space-y-8">
+                        
+                        <!-- Location Input -->
+                        <div class="relative">
+                            <label for="location" class="block text-lg font-semibold text-gray-700 mb-4">
+                                📍 Select Your Location
+                            </label>
+                            <input type="text" id="location" placeholder="Type your city or region (e.g., Kanjirappally, Kerala)" 
+                                   class="w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500" 
+                                   required autocomplete="off">
+                            <div id="location-suggestions" class="absolute z-20 w-full bg-white border border-gray-300 rounded-xl mt-2 hidden shadow-lg">
+                                <!-- Suggestions will be populated here -->
+                            </div>
+                        </div>
+
+                        <!-- Crop Selection -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <label for="crop-type" class="block text-lg font-semibold text-gray-700 mb-4">
+                                    🌾 Crop Type
+                                </label>
+                                <select id="crop-type" class="w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500" required>
+                                    <option value="1.20">🌾 Rice (Paddy)</option>
+                                    <option value="0.75">🌾 Wheat</option>
+                                    <option value="1.25">🎋 Sugarcane</option>
+                                    <option value="1.15">🌱 Cotton</option>
+                                    <option value="1.10">🥄 Lentils (Dal)</option>
+                                    <option value="0.95">🥥 Coconut</option>
+                                    <option value="1.05">🍃 Tea</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label for="growth-stage" class="block text-lg font-semibold text-gray-700 mb-4">
+                                    📈 Growth Stage
+                                </label>
+                                <select id="growth-stage" class="w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500" required>
+                                    <option value="0.7">🌱 Seedling</option>
+                                    <option value="1.05">🌿 Vegetative</option>
+                                    <option value="0.8">🌸 Flowering</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Generate Button -->
+                        <div class="text-center mt-12">
+                            <button type="submit" id="generate-btn" class="cta-button bg-gradient-to-r from-blue-600 to-green-600 text-white font-bold py-4 px-12 rounded-xl shadow-lg text-lg">
+                                🚀 Generate NASA-Powered Schedule
+                            </button>
+                            <p id="error-message" class="text-red-500 text-lg mt-6"></p>
+                        </div>
+                        
+                    </form>
+                </div>
+                
+                <!-- Back to Intro Button -->
+                <div class="text-center mt-8">
+                    <button type="button" id="back-to-intro-btn" class="cta-button bg-gray-600 text-white font-bold py-3 px-8 rounded-xl">
+                        ← Back to Introduction
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 3: WEEK PLAN AND REASONING -->
+        <section id="page-3" class="page">
+            <div class="container mx-auto px-6 py-20">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Your NASA-Powered Irrigation Plan</h2>
+                    <p id="result-location-text" class="text-lg text-gray-600 mb-8">Based on recent historical data for your location.</p>
+                    
+                    <!-- NASA Data Source Badge -->
+                    <div class="inline-flex items-center bg-blue-50 border border-blue-200 rounded-full px-6 py-2 mb-8">
+                        <span class="text-blue-600 font-semibold">📡 Powered by NASA POWER Project Data</span>
+                    </div>
+                </div>
+                
+                <!-- Schedule Cards -->
+                <div id="result-cards" class="mb-16 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-6">
+                    <!-- Dynamic cards will be inserted here -->
+                </div>
+                
+                <!-- Reasoning Section -->
+                <div class="max-w-5xl mx-auto bg-gradient-to-r from-blue-50 to-green-50 rounded-2xl p-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">
+                        🧠 Scientific Methodology & Reasoning
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="text-xl font-bold text-blue-600 mb-4">📡 NASA Data Sources</h4>
+                            <ul class="space-y-3 text-gray-700">
+                                <li class="flex items-start">
+                                    <span class="mr-3">🌞</span>
+                                    <div>
+                                        <strong>ALLSKY_SFC_SW_DWN:</strong> Solar insolation data measuring daily solar energy reaching the surface
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="mr-3">🌧️</span>
+                                    <div consistency>
+                                        <strong>PRECTOTCORR:</strong> Corrected precipitation data from NASA's MERRA-2 reanalysis
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="mr-3">🌍</span>
+                                    <div>
+                                        <strong>Global Coverage:</strong> 0.5° × 0.625° resolution data worldwide
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h4 class="text-xl font-bold text-green-600 mb-4">🌱 Crop Water Requirements</h4>
+                            <ul class="space-y-3 text-gray-700">
+                                <li class="flex items-start">
+                                    <span class="mr-3">📊</span>
+                                    <div>
+                                        <strong>Evapotranspiration:</strong> Converted solar data to ET rates using NASA-documented formulas
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="mr-3">🌾</span>
+                                    <div>
+                                        <strong>Crop Coefficients:</strong> Applied FAO crop-specific multipliers for accurate water needs
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="mr-3">💧</span>
+                                    <div>
+                                        <strong>Water Balance:</strong> ET × Crop_Coefficient - Precipitation = Irrigation Needed
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 p-6 bg-white rounded-xl">
+                        <h4 class="text-xl font-bold text-gray-800 mb-4">🎯 Decision Logic</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="text-center p-4 bg-blue-100 rounded-lg">
+                                <div class="text-3xl mb-2">🔵</div>
+                                <h5 class="font-bold">Watering Needed</h5>
+                                <p class="text-sm text-gray-600">When water deficit > 0.1 inches due to high ET and low precipitation</p>
+                            </div>
+                            <div class="text-center p-4 bg-green-100 rounded-lg">
+                                <div class="text-3xl mb-2">🟢</div>
+                                <h5 class="font-bold">Monitor Mode</h5>
+                                <p class="text-sm text-gray-600">When precipitation > 2.5mm or water needs are minimal</p>
+                            </div>
+                            <div class="text-center p-4 bg-yellow-100 rounded-lg">
+                                <div class="text-3xl mb-2">🟡</div>
+                                <h5 class="font-bold">Adjust Timing</h5>
+                                <p class="text-sm text-gray-600">Based on morning ET rates for optimal water absorption</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="text-center mt-12 space-x-4">
+                    <button type="button" id="modify-details-btn" class="cta-button bg-gray-600 text-white font-bold py-3 px-8 rounded-xl">
+                        ← Modify Details
+                    </button>
+                    <button type="button" id="home-btn" class="cta-button bg-gradient-to-r from-blue-600 to-green-600 text-white font-bold py-3 px-8 rounded-xl">
+                        🏠 Home
+                    </button>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-6 text-center">
+            <div class="flex items-center justify-center space-x-4 mb-4">
+                <div class="nasa-badge rounded-lg px-3 py-1 nasa-logo">
+                    <div class="satellite-icon" style="top: 5px; right: 10px;"></div>
+                    <div class="satellite-line-1" style="right: 12px; top: 2px;"></div>
+                    <div class="satellite-line-2" style="right: 12px; top: 2px;"></div>
+                    <div class="satellite-line-3" style="right: 12px; top: 1px;"></div>
+                    <div class="satellite-line-4" style="right: 12px; top: 1px;"></div>
+                    <div class="text-white text-xs font-bold">
+                        <span class="text-red-500">NASA</span><span class="text-xs">®</span><br>
+                        <span class="text-xs">CHALLENGE</span>
+                    </div>
+                </div>
+                <span class="text-blue-400">💧</span>
+                <span class="font-bold">AquaSmart Fields</span>
+            </div>
+            <p>&copy; 2025 AquaSmart Fields - NASA Space Apps Challenge Project</p>
+        </div>
+    </footer>
+
+    <script>
+        // Global variables
+        let currentPage = 1;
+        const totalPages = 3;
+        let selectedLocation = null;
+        let debounceTimer;
+
+        // Elements
+        const form = document.getElementById('schedule-form');
+        const locationInput = document.getElementById('location');
+        const suggestionsContainer = document.getElementById('location-suggestions');
+        const resultCardsContainer = document.getElementById('result-cards');
+        const resultLocationText = document.getElementById('result-location-text');
+        const generateBtn = document.getElementById('generate-btn');
+        const errorMessage = document.getElementById('error-message');
+        const progressFill = document.getElementById('progress-fill');
+
+        // Navigation function
+        function goToPage(pageNumber) {
+            console.log(`Navigating from page ${currentPage} to page ${pageNumber}`);
+            
+            // Hide current page
+            const currentPageElement = document.getElementById(`page-${currentPage}`);
+            if (currentPageElement) {
+                currentPageElement.classList.remove('active');
+                currentPageElement.display = 'none';
+            }
+            
+            // Show target page
+            const targetPageElement = document.getElementById(`page-${pageNumber}`);
+            if (targetPageElement) {
+                targetPageElement.style.display = 'block';
+                targetPageElement.classList.add('active');
+            }
+            
+            currentPage = pageNumber;
+            
+            // Update progress bar
+            if (progressFill) {
+                progressFill.style.width = `${(pageNumber / totalPages) * 100}%`;
+            }
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Add event listeners for navigation buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('AquaSmart Fields - NASA Space Apps Challenge Application Loaded');
+            console.log('🚀 Ready to generate irrigation schedules using NASA data!');
+            
+            // Start Journey button
+            const startJourneyBtn = document.getElementById('start-journey-btn');
+            if (startJourneyBtn) {
+                startJourneyBtn.addEventListener('click', function() {
+                    goToPage(2);
+                });
+            }
+            
+            // Back to Intro button
+            const backToIntroBtn = document.getElementById('back-to-intro-btn');
+            if (backToIntroBtn) {
+                backToIntroBtn.addEventListener('click', function() {
+                    goToPage(1);
+                });
+            }
+            
+            // Modify Details button
+            const modifyDetailsBtn = document.getElementById('modify-details-btn');
+            if (modifyDetailsBtn) {
+                modifyDetailsBtn.addEventListener('click', function() {
+                    goToPage(2);
+                });
+            }
+            
+            // Home button
+            const homeBtn = document.getElementById('home-btnis');
+            if (homeBtn) {
+                homeBtn.addEventListener('click', function() {
+                    goToPage(1);
+                });
+            }
+            
+            // Location input functionality
+            if (locationInput) {
+                locationInput.addEventListener('input', handleLocationInput);
+            }
+            
+            // Form submission
+            if (form) {
+                form.addEventListener('submit', handleFormSubmit);
+            }
+            
+            // Hide suggestions when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!locationInput.contains(event.target) && !suggestionsContainer.contains(event.target)) {
+                    suggestionsContainer.classList.add('hidden');
+                }
+            });
+            
+            console.log('✅ All navigation buttons initialized successfully!');
+        });
+
+        // Location input handler
+        function handleLocationInput(e) {
+            const query = e.target.value;
+            selectedLocation = null;
+            clearTimeout(debounceTimer);
+            
+            if (query.length < 3) {
+                suggestionsContainer.classList.add('hidden');
+                return;
+            }
+            
+            debounceTimer = setTimeout(async () => {
+                try {
+                    const suggestions = await fetchSuggestions(query);
+                    displaySuggestions(suggestions);
+                } catch (error) {
+                    console.error('Error fetching suggestions:', error);
+                }
+            }, 300);
+        }
+
+        // Fetch location suggestions
+        async function fetchSuggestions(query) {
+            try {
+                const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5`);
+                if (!response.ok) return [];
+                const data = await response.json();
+                return data.results || [];
+            } catch (error) {
+                console.error('Error fetching suggestions:', error);
+                return [];
+            }
+        }
+
+        // Display suggestions
+        function displaySuggestions(suggestions) {
+            suggestionsContainer.innerHTML = '';
+            
+            if (suggestions.length === 0) {
+                suggestionsContainer.classList.add('hidden');
+                return;
+            }
+            
+            suggestions.forEach(suggestion => {
+                const suggestionEl = document.createElement('div');
+                suggestionEl.className = 'p-4 hover:bg-gray-100 cursor-pointer text-left border-b border-gray-200 last:border-b-0';
+                const locationName = `${suggestion.name}${suggestion.admin1 ? ', ' + suggestion.admin1 : ''}, ${suggestion.country}`;
+                suggestionEl.textContent = locationName;
+                
+                suggestionEl.addEventListener('click', () => {
+                    locationInput.value = locationName;
+                    selectedLocation = {
+                        name: suggestion.name,
+                        latitude: suggestion.latitude,
+                        longitude: suggestion.longitude
+                    };
+                    suggestionsContainer.classList.add('hidden');
+                });
+                
+                suggestionsContainer.appendChild(suggestionEl);
+            });
+            
+            suggestionsContainer.classList.remove('hidden');
+        }
+
+        // NASA POWER API function
+        async function getNasaPowerData(latitude, longitude) {
+            const endDateObj = new Date();
+            endDateObj.setDate(endDateObj.getDate() - 2);
+            const endDate = endDateObj.toISOString().slice(0, 10).replace(/-/g, '');
+            
+            const startDateObj = new Date();
+            startDateObj.setDate(startDateObj.getDate() - 11);
+            const startDate = startDateObj.toISOString().slice(0, 10).replace(/-/g, '');
+
+            const constants = 'PRECTOTCORR,ALLSKY_SFC_SW_DWN';
+            const apiUrl = `https://power.larc.nasa.gov/api/temporal/daily/point?parameters=${parameters}&community=RE&longitude=${longitude}&latitude=${latitude}&start=${startDate}&end=${endDate}&format=JSON`;
+            
+            console.log(`Fetching from NASA POWER: ${apiUrl}`);
+            const response = await fetch(apiUrl);
+            if (!response.ok) throw new Error("Could not fetch data from NASA POWER API.");
+            const data = await response.json();
+
+            if (!data.properties || !data.properties.parameter || Object.keys(data.properties.parameter).length === 0) {
+                throw new Error("NASA POWER API returned no data for this location. It may be an offshore point.");
+            }
+            
+            return data.properties.parameter;
+        }
+
+        // Handle form submission
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+            errorMessage.textContent = '';
+
+            if (!selectedLocation) {
+                errorMessage.textContent = 'Please select a valid location from the suggestions list.';
+                return;
+            }
+
+            generateBtn.disabled = true;
+            generateBtn.textContent = '🚀 Analyzing NASA Data...';
+
+            try {
+                const cropCoeff = parseFloat(document.getElementById('crop-type').value);
+                const growthCoeff = parseFloat(document.getElementById('growth-stage').value);
+                const finalCropCoeff = cropCoeff * growthCoeff;
+
+                // Fetch NASA data
+                const nasaData = await getNasaPowerData(selectedLocation.latitude, selectedLocation.longitude);
+                
+                resultLocationText.textContent = `Based on recent NASA data for ${selectedLocation.name}`;
+                resultCardsContainer.innerHTML = '';
+
+                const dates = Object.keys(nasaData.ALLSKY_SFC_SW_DWN).sort();
+                console.log(`NASA returned ${dates.length} days of data.`);
+                
+                const last7Days = dates.slice(-7);
+
+                if (last7Days.length < 7) {
+                    console.warn(`Could only retrieve ${last7Days.length} complete days of data from NASA.`);
+                    if (last7Days.length < 1) {
+                        throw new Error("Not enough recent data from NASA for analysis.");
+                    }
+                }
+
+                last7Days.forEach((date, i) => {
+                    const solarInsolation = nasaData.ALLSKY_SFC_SW_DWN[date];
+                    const precip_mm = nasaData.PRECTOTCORR[date];
+                    
+                    if (solarInsolation < 0 || precip_mm < 0) {
+                        console.warn(`Missing NASA data for ${date}, skipping.`);
+                        return;
+                    }
+
+                    const et_inches = solarInsolation * 0.04;
+                    const precip_inches = precip_mm / 25.4;
+
+                    const waterNeeded_inches_raw = (et_inches * finalCropCoeff) - precip_inches;
+                    let waterNeeded_inches = Math.max(0, waterNeeded_inches_raw).toFixed(2);
+                    
+                    if (precip_mm > 2.5) waterNeeded_inches = 0;
+                    
+                    createResultCard(i, date, waterNeeded_inches, precip_mm, et_inches);
+                });
+
+                goToPage(3);
+
+            } catch (error) {
+                errorMessage.textContent = `Error: ${error.message}`;
+                console.error(error);
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.textContent = '🚀 Generate NASA-Powered Schedule';
+            }
+        }
+
+        // Create result card
+        function createResultCard(dayIndex, dateString, waterNeeded_inches, precip_mm, et_inches) {
+            const year = parseInt(dateString.substring(0, 4));
+            const month = parseInt(dateString.substring(4, 6)) - 1;
+            const day = parseInt(dateString.substring(6, 8));
+            const date = new Date(year, month, day);
+
+            let dayLabel = date.toLocaleDateString('en-IN', { weekday: 'long' });
+
+            const ACRE_IN_SQ_METERS = 4046.86;
+            const waterAmount_inches = parseFloat(waterNeeded_inches);
+            const waterInLiters = waterAmount_inches * 0.0254 * ACRE_IN_SQ_METERS * 1000;
+            const et_mm = et_inches * 25.4;
+
+            let status, amountText, description, reasoningText, bgColor, textColor;
+
+            if (waterAmount_inches > 0.1) {
+                status = '💧 Watering Needed'; 
+                bgColor = 'bg-blue-100';
+                textColor = 'text-blue-600';
+                amountText = `${waterInLiters.toLocaleString('en-IN', { maximumFractionDigits: 0 })} Liters`;
+                description = 'per acre';
+                reasoningText = 'High NASA-measured solar energy with minimal rain.';
+            } else {
+                status = '✅ Monitor Only'; 
+                bgColor='bg-green-100';
+                textColor = 'text-green-600';
+                amountText = 'No Water Needed';
+                if (precip_mm > 2.5) {
+                    description = 'Sufficient NASA-tracked Rain';
+                    reasoningText = 'NASA precipitation data shows adequate rainfall recorded.';
+                } else {
+                    description = 'Soil humidity optimal';
+                    reasoningText = 'Low solar ET and residual moisture sufficient.';
+                }
+            }
+            
+            const cardHTML = `
+                <div class="bg-white p-6 rounded-2xl border-2 border-gray-200 card-hover fade-in ${bgColor}">
+                    <div class="mb-4">
+                        <h3 class="font-bold text-xl text-gray-800 mb-2">${dayLabel}</h3>
+                        <p class="text-sm text-gray-500 mb-3">${date.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}</p>
+                        <p class="${textColor} font-bold text-2xl mb-2">${amountText}</p>
+                        <p class="text-gray-600 font-medium mb-3">${description}</p>
+                        <div class="inline-block px-4 py-2 rounded-full text-sm font-semibold ${textColor} bg-white">
+                            ${status}
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t border-gray-200">
+                        <p class="font-bold text-gray-700 mb-2">📊 NASA Data Analysis:</p>
+                        <div class="space-y-1 text-sm text-gray-600">
+                            <div>☀️ Solar Energy (ET): <strong>${et_mm.toFixed(1)} mm</strong></div>
+                            <div>🌧️ Precipitation: <strong>${precip_mm.toFixed(1)} mm</strong></div>
+                        </div>
+                        <p class="mt-3 text-sm text-gray-500 italic">${reasoningText}</p>
+                    </div>
+                </div>`;
+            resultCardsContainer.innerHTML += cardHTML;
+        }
+    </script>
+</body>
+</html>
